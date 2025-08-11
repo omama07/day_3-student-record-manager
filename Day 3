@@ -1,0 +1,80 @@
+"""
+Day 3 – Student Record Manager
+"""
+def add_student(record_set: set) -> set:
+    """
+    Adds a new student record to the set.
+    Each record is stored as a tuple: (name, grade).
+    Prevents duplicate names and invalid inputs.
+    """
+    while True:
+        entry = input("\nEnter student record (Name, Grade) or 'exit' to stop: ").strip()
+        if entry.lower() == "exit":
+            break
+        if "," not in entry:
+            print(" Invalid format! Use: Name, Grade")
+            continue
+
+        name, grade = entry.split(",", 1)
+        name = name.strip().capitalize()
+        grade = grade.strip()
+        if not name:
+            print("Name cannot be blank!")
+            continue
+        if not grade.isdigit():
+            print("Grade must be a number!")
+            continue
+
+        grade = int(grade)
+        if grade < 0 or grade > 100:
+            print("Grade must be between 0 and 100!")
+            continue
+
+        # Check duplicate name
+        if any(student[0] == name for student in record_set):
+            print(f" Student '{name}' already exists. Skipping entry.")
+            continue
+
+        record_set.add((name, grade))
+        print(f"Added: {name} ({grade})")
+
+    return record_set
+def view_all_students(record_set: set) -> None:
+    """
+    Prints all student records.
+    """
+    if not record_set:
+        print("\n No student records found.")
+        return
+
+    print("\n Student Records:")
+    for name, grade in sorted(record_set):
+        print(f" - {name}: {grade}")
+def get_top_student(record_set: set) -> tuple:
+    """
+    Returns the student with the highest grade.
+    """
+    return max(record_set, key=lambda x: x[1]) if record_set else None
+def filter_students(record_set: set, min_grade: int) -> list:
+    """
+    Returns a list of students above the given grade.
+    """
+    return [(name, grade) for name, grade in record_set if grade > min_grade]
+if __name__ == "__main__":
+    student_records = set()
+    student_records = add_student(record_set=student_records)
+    view_all_students(record_set=student_records)
+    top_student = get_top_student(record_set=student_records)
+    if top_student:
+        print(f"\n Top Student: {top_student[0]} ({top_student[1]})")
+
+    # Step 4: Final Report
+    if student_records:
+        grades = [grade for _, grade in student_records]
+        avg_grade = sum(grades) / len(grades)
+        above_avg_students = filter_students(record_set=student_records, min_grade=avg_grade)
+        print("\n Final Report:")
+        print(f" - Total Unique Students: {len(student_records)}")
+        print(f" - Class Average: {avg_grade:.2f}")
+        print(f" - Students Above Average: {[name for name, _ in above_avg_students]}")
+
